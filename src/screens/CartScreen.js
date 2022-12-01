@@ -2,7 +2,7 @@ import { useContext } from "react";
 import Col from "react-bootstrap/esm/Col";
 import Row from "react-bootstrap/esm/Row";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MessageBox from "../components/MessageBox";
 import { Store } from "../Store";
 import ListGroup from "react-bootstrap/ListGroup"
@@ -11,6 +11,7 @@ import Button from "react-bootstrap/esm/Button";
 import Card from 'react-bootstrap/Card';
 import axios from "axios";
 export default function CartScreen() {
+    const navigate = useNavigate();
     const {state, dispatch: ctxDispatch} = useContext(Store);
     const {
         cart: {cartItems},
@@ -24,6 +25,12 @@ export default function CartScreen() {
           }
         ctxDispatch({type:'CART_ADD_ITEM', payload: {...item, quantity},
       });
+    }
+    const removeItemHandler= (item) => {
+        ctxDispatch({type: 'CART_REMOVE_ITEM', payload: item});
+    }
+    const checkoutHandler = () => {
+        navigate('/signin?redirect=/shipping')
     }
     return (
         <div>
@@ -61,7 +68,7 @@ export default function CartScreen() {
                                     </Col>
                                     <Col md={3}>${item.price}</Col>
                                     <Col md={2}>
-                                        <Button variant="light">
+                                        <Button variant="light" onClick={() => removeItemHandler(item)}>
                                             <i className="fas fa-trash"></i>
                                         </Button>
                                     </Col>
@@ -87,6 +94,7 @@ export default function CartScreen() {
                                 <div className="d-grid">
                                     <Button type="button"
                                             variant="primary"
+                                            onClick={checkoutHandler}
                                             disabled={cartItems.length === 0}>
                                             Proceed To Checkout
 
